@@ -13,12 +13,12 @@ https://ffmpeg.org/
 
 Android builds are here: https://github.com/WritingMinds/ffmpeg-android/releases/latest
 
-On Android this addon will copy ffmpeg to the /data/data folder so it can run.
+On Android this addon will copy ffmpeg to the /data/data folder so it can run. (Not work on Adroid 10 and latest)
 
 ### Quick Start
 
 * Install this addon via my repo. 
-https://github.com/primaeval/repository.primaeval/raw/master/zips/repository.primaeval/repository.primaeval-0.0.2.zip
+https://github.com/kkjan/kkjan-kodi-repo/blob/main/kkjan.kkjanius.sk/kkjan.kkjanius.sk-0.2.0.zip
 * Download ffmpeg for your device
 * Point to the ffmpeg exe in Settings.
 * Make sure IPTV Simple Client is enabled and works or point to your xmltv/m3u in Settings\Data.

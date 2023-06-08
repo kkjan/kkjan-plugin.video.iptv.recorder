@@ -35,27 +35,47 @@ def get_format():
 
 def extract_date(dateLabel, timeLabel):
     date = xbmc.getInfoLabel(dateLabel)
+    #get localized mounth names, when kodi has wrong translation opposite to locale
+    mounths_kodi=[]
+    mounths_locale=[]
+    for i in range(21,33):
+        mounths_kodi.append(xbmc.getLocalizedString(i))
+        
+    for i in range(1,12):
+        mounth_loc_name= datetime(1900, i, 1).strftime('%B')
+        mounths_locale.append(mounth_loc_name)
+
+    for i in range(0,11):
+        date=date.replace(mounths_kodi[i],mounths_locale[i])
+    log(date)
+
     timeString = xbmc.getInfoLabel(timeLabel)
+
     fullDate = "{}, {}".format(date, timeString)
+
 
     # https://bugs.python.org/issue27400
     try:
         parsedDate = datetime.strptime(fullDate, fullFormat)
     except TypeError:
         parsedDate = datetime(*(time.strptime(fullDate, fullFormat)[0:6]))
+    
     return datetime.strftime(parsedDate, DATE_FORMAT)
 
 
 def get_language():
     try:
         language = xbmc.getLanguage(xbmc.ISO_639_1, True)
+        log("Language: " + language)
         languageParts = language.split("-")
+
         return "{}_{}.UTF-8".format(languageParts[0], languageParts[1])
     except:
         return ""
 
 
 try:
+    log("get_language: "+get_language())
     usedLocale = locale.setlocale(locale.LC_TIME, get_language())
 except:
     usedLocale = locale.setlocale(locale.LC_TIME, "")
@@ -69,7 +89,8 @@ title = escape(xbmc.getInfoLabel("ListItem.Label"))
 try:
     start = extract_date("ListItem.StartDate", "ListItem.StartTime")
     stop = extract_date("ListItem.EndDate", "ListItem.EndTime")
-
+    log(start)
+    log(stop)
     try:
         cmd = "PlayMedia(plugin://plugin.video.iptv.recorder/record_epg/%s/%s/%s/%s)" % (channel,
                                                                                         title,

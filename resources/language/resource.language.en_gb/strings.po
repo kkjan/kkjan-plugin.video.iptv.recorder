@@ -1,0 +1,711 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: plugin.video.4ka.tv\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.1.1\n"
+"X-Poedit-Basepath: ../..\n"
+"X-Poedit-SearchPath-0: settings.xml\n"
+
+msgctxt "#30000"
+msgid "Delete All Recordings?"
+msgstr ""
+
+msgctxt "#30001"
+msgid "Play Channel"
+msgstr ""
+
+msgctxt "#30002"
+msgid "Delete Job"
+msgstr ""
+
+msgctxt "#30003"
+msgid "Finished"
+msgstr ""
+
+msgctxt "#30004"
+msgid "Record Once"
+msgstr ""
+
+msgctxt "#30005"
+msgid "Play Channel External"
+msgstr ""
+
+msgctxt "#30006"
+msgid "External Player"
+msgstr ""
+
+msgctxt "#30007"
+msgid "Title Search (% is wildcard)?"
+msgstr ""
+
+msgctxt "#30008"
+msgid "Delete All Jobs"
+msgstr ""
+
+msgctxt "#30009"
+msgid "Search Plot"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Add Favourite Channel"
+msgstr ""
+
+msgctxt "#30011"
+msgid "Delete All Rules"
+msgstr ""
+
+msgctxt "#30012"
+msgid "Recording Rules"
+msgstr ""
+
+msgctxt "#30013"
+msgid "Favourite Channels"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Delete All Recordings"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Full EPG"
+msgstr ""
+
+msgctxt "#30016"
+msgid "Search Title"
+msgstr ""
+
+msgctxt "#30017"
+msgid "xmltv"
+msgstr ""
+
+msgctxt "#30018"
+msgid "Delete Search"
+msgstr ""
+
+msgctxt "#30019"
+msgid "Cancel Record?"
+msgstr ""
+
+msgctxt "#30020"
+msgid "Delete Recording?"
+msgstr ""
+
+msgctxt "#30021"
+msgid "New"
+msgstr ""
+
+msgctxt "#30022"
+msgid "Remove Favourite Channel"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Recording Jobs"
+msgstr ""
+
+msgctxt "#30024"
+msgid "Plot Search (% is wildcard)?"
+msgstr ""
+
+msgctxt "#30025"
+msgid "Add Title Search Rule"
+msgstr ""
+
+msgctxt "#30026"
+msgid "Add Plot Search Rule"
+msgstr ""
+
+msgctxt "#30027"
+msgid "Delete All Rules?"
+msgstr ""
+
+msgctxt "#30028"
+msgid "Recordings Folder"
+msgstr ""
+
+msgctxt "#30029"
+msgid "ffmpeg exe not found!"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Tomorrow"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Today"
+msgstr ""
+
+msgctxt "#30032"
+msgid "Delete Rule"
+msgstr ""
+
+msgctxt "#30033"
+msgid "Channel Groups"
+msgstr ""
+
+msgctxt "#30034"
+msgid "Loading data..."
+msgstr ""
+
+msgctxt "#30035"
+msgid "Cancel Record"
+msgstr ""
+
+msgctxt "#30036"
+msgid "Service"
+msgstr ""
+
+msgctxt "#30037"
+msgid "Delete Recording"
+msgstr ""
+
+msgctxt "#30038"
+msgid "Yesterday"
+msgstr ""
+
+msgctxt "#30039"
+msgid "Delete All Jobs?"
+msgstr ""
+
+msgctxt "#30040"
+msgid "Recordings"
+msgstr ""
+
+msgctxt "#30041"
+msgid "Record Always"
+msgstr ""
+
+msgctxt "#30042"
+msgid "Record Daily"
+msgstr ""
+
+msgctxt "#30043"
+msgid "Creating database"
+msgstr ""
+
+msgctxt "#30044"
+msgid "Copying xmltv file"
+msgstr ""
+
+msgctxt "#30045"
+msgid "Unzipping xmltv file"
+msgstr ""
+
+msgctxt "#30046"
+msgid "Finding channels"
+msgstr ""
+
+msgctxt "#30047"
+msgid "Finding programmes"
+msgstr ""
+
+msgctxt "#30048"
+msgid "Finding streams"
+msgstr ""
+
+msgctxt "#30049"
+msgid "NUKE"
+msgstr ""
+
+msgctxt "#30050"
+msgid "Finished loading data"
+msgstr ""
+
+msgctxt "#30051"
+msgid "Watch Daily"
+msgstr ""
+
+msgctxt "#30052"
+msgid "Delete Everything and Start Again?"
+msgstr ""
+
+msgctxt "#30053"
+msgid "Watch Once"
+msgstr ""
+
+msgctxt "#30054"
+msgid "Reload Data"
+msgstr ""
+
+msgctxt "#30055"
+msgid "Search Categories"
+msgstr ""
+
+msgctxt "#30056"
+msgid "Watch Always"
+msgstr ""
+
+msgctxt "#30057"
+msgid "Monday"
+msgstr ""
+
+msgctxt "#30058"
+msgid "Tuesday"
+msgstr ""
+
+msgctxt "#30059"
+msgid "Wednesday"
+msgstr ""
+
+msgctxt "#30060"
+msgid "Thursday"
+msgstr ""
+
+msgctxt "#30061"
+msgid "Friday"
+msgstr ""
+
+msgctxt "#30062"
+msgid "Saturday"
+msgstr ""
+
+msgctxt "#30063"
+msgid "Sunday"
+msgstr ""
+
+msgctxt "#30064"
+msgid "Remind Daily"
+msgstr ""
+
+msgctxt "#30065"
+msgid "Rules"
+msgstr ""
+
+msgctxt "#30066"
+msgid "Jobs"
+msgstr ""
+
+msgctxt "#30067"
+msgid "Remind Once"
+msgstr ""
+
+msgctxt "#30068"
+msgid "Remind Always"
+msgstr ""
+
+msgctxt "#30069"
+msgid "Cancel Watch"
+msgstr ""
+
+msgctxt "#30070"
+msgid "Cancel Remind"
+msgstr ""
+
+msgctxt "#30071"
+msgid "% is Wildcard"
+msgstr ""
+
+msgctxt "#30072"
+msgid "Search"
+msgstr ""
+
+msgctxt "#30073"
+msgid "TV Shows"
+msgstr ""
+
+msgctxt "#30074"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#30075"
+msgid "Do Not Load Group"
+msgstr ""
+
+msgctxt "#30076"
+msgid "Delete ffmpeg"
+msgstr ""
+
+msgctxt "#30077"
+msgid "Add Daily Time Rule"
+msgstr ""
+
+msgctxt "#30078"
+msgid "Add Weekly Time Rule"
+msgstr ""
+
+msgctxt "#30079"
+msgid "Record and Play"
+msgstr ""
+
+msgctxt "#30080"
+msgid "Watch Weekly"
+msgstr ""
+
+msgctxt "#30081"
+msgid "Other"
+msgstr ""
+
+msgctxt "#30082"
+msgid "Select Groups To Load"
+msgstr ""
+
+msgctxt "#30083"
+msgid "Record Weekly"
+msgstr ""
+
+msgctxt "#30084"
+msgid "Maintenance"
+msgstr ""
+
+msgctxt "#30085"
+msgid "Load Group"
+msgstr ""
+
+msgctxt "#30086"
+msgid "Browse"
+msgstr ""
+
+msgctxt "#30087"
+msgid "Add One Time Rule"
+msgstr ""
+
+msgctxt "#30088"
+msgid "Categories"
+msgstr ""
+
+msgctxt "#30089"
+msgid "Remind Weekly"
+msgstr ""
+
+msgctxt "#30090"
+msgid "Convert to mp4"
+msgstr ""
+
+msgctxt "#30091"
+msgid "All Channels"
+msgstr ""
+
+msgctxt "#30092"
+msgid "Start Time"
+msgstr ""
+
+msgctxt "#30093"
+msgid "Number of hours to record"
+msgstr ""
+
+msgctxt "#30094"
+msgid "Rule Name"
+msgstr ""
+
+msgctxt "#30095"
+msgid "Start Date"
+msgstr ""
+
+msgctxt "#30096"
+msgid "Stop Time"
+msgstr ""
+
+msgctxt "#30097"
+msgid "Updating database"
+msgstr ""
+
+msgctxt "#30098"
+msgid "Database not found"
+msgstr "Database not found, please retry after few seconds"
+
+msgctxt "#30500"
+msgid "Display"
+msgstr ""
+
+msgctxt "#30520"
+msgid "Show Finished Programmes"
+msgstr ""
+
+msgctxt "#30521"
+msgid "Sort Channels by"
+msgstr ""
+
+msgctxt "#30522"
+msgid "Show Items on Two Lines"
+msgstr ""
+
+msgctxt "#30523"
+msgid "Hide Channel Names if Logo Exists"
+msgstr ""
+
+msgctxt "#30524"
+msgid "Show Categories"
+msgstr ""
+
+msgctxt "#30525"
+msgid "Refresh Folder on Context Menu Commands (might hang!)"
+msgstr ""
+
+msgctxt "#30526"
+msgid "Scroll to Now in Channel Listing"
+msgstr ""
+
+msgctxt "#30527"
+msgid "Scroll Timeout (msec)"
+msgstr ""
+
+msgctxt "#30528"
+msgid "Look in your skin/xml/MyVideoNav.xml <view></view>"
+msgstr ""
+
+msgctxt "#30529"
+msgid "Wide List is 51 in Confluence, 55 in Estuary. "
+msgstr ""
+
+msgctxt "#30530"
+msgid "Force View Mode id"
+msgstr ""
+
+msgctxt "#30531"
+msgid "Hide Channels Without Now/Next Programs"
+msgstr ""
+
+msgctxt "#30532"
+msgid "Show Now/Next in All Channels / Full EPG"
+msgstr ""
+
+msgctxt "#30533"
+msgid "Show Now/Next in Channel Lists"
+msgstr ""
+
+msgctxt "#30534"
+msgid "Show Now/Next in Favourites"
+msgstr ""
+
+msgctxt "#30535"
+msgid "Add Channel to Favourites when Visited"
+msgstr ""
+
+msgctxt "#30536"
+msgid "Add Context Searches to Search Lists"
+msgstr ""
+
+msgctxt "#30537"
+msgid "Meta4kodi or fork"
+msgstr ""
+
+msgctxt "#30501"
+msgid "Jobs and Rules"
+msgstr ""
+
+msgctxt "#30538"
+msgid "Kodi Recordings Folder"
+msgstr ""
+
+msgctxt "#30539"
+msgid "pipe ffmpeg output through Kodi (for network folders)"
+msgstr ""
+
+msgctxt "#30540"
+msgid "ffmpeg Recordings Folder (if different than Kodi path)"
+msgstr ""
+
+msgctxt "#30541"
+msgid "Url Encode Whole Filename"
+msgstr ""
+
+msgctxt "#30542"
+msgid "Create json File"
+msgstr ""
+
+msgctxt "#30543"
+msgid "ffmpeg exe"
+msgstr ""
+
+msgctxt "#30544"
+msgid "ffmpeg exe"
+msgstr ""
+
+msgctxt "#30545"
+msgid "ffmpeg reconnect arguments"
+msgstr ""
+
+msgctxt "#30546"
+msgid "Optional extra ffmpeg arguments"
+msgstr ""
+
+msgctxt "#30547"
+msgid "ffmpeg file extension (ts is recommended)"
+msgstr ""
+
+msgctxt "#30548"
+msgid "($p full path, $d recording directory, $f base filename)"
+msgstr ""
+
+msgctxt "#30549"
+msgid "Post-processing command "
+msgstr ""
+
+msgctxt "#30550"
+msgid "Minutes Before"
+msgstr ""
+
+msgctxt "#30551"
+msgid "Minutes After"
+msgstr ""
+
+msgctxt "#30552"
+msgid "Silent Notifications"
+msgstr ""
+
+msgctxt "#30502"
+msgid "Data"
+msgstr ""
+
+msgctxt "#30553"
+msgid "External xmltv 1"
+msgstr ""
+
+msgctxt "#30554"
+msgid "External xmltv File 1"
+msgstr ""
+
+msgctxt "#30555"
+msgid "External xmltv Url 1"
+msgstr ""
+
+msgctxt "#30556"
+msgid "External m3u 1"
+msgstr ""
+
+msgctxt "#30557"
+msgid "External m3u File 1"
+msgstr ""
+
+msgctxt "#30558"
+msgid "External m3u Url 1"
+msgstr ""
+
+msgctxt "#30559"
+msgid "External m3u Time Shift 1 (hours)"
+msgstr ""
+
+msgctxt "#30560"
+msgid "External xmltv 2"
+msgstr ""
+
+msgctxt "#30561"
+msgid "External xmltv File 2"
+msgstr ""
+
+msgctxt "#30562"
+msgid "External xmltv Url 2"
+msgstr ""
+
+msgctxt "#30563"
+msgid "External m3u 2"
+msgstr ""
+
+msgctxt "#30564"
+msgid "External m3u File 2"
+msgstr ""
+
+msgctxt "#30565"
+msgid "External m3u Url 2"
+msgstr ""
+
+msgctxt "#30566"
+msgid "External m3u Time Shift 2 (hours)"
+msgstr ""
+
+msgctxt "#30567"
+msgid "m3u Url Regex Search"
+msgstr ""
+
+msgctxt "#30568"
+msgid "m3u Url Regex Replace"
+msgstr ""
+
+msgctxt "#30569"
+msgid "xmltv Title Regex Search (eg \\[.*?\\])"
+msgstr ""
+
+msgctxt "#30570"
+msgid "xmltv Title Regex Replace"
+msgstr ""
+
+msgctxt "#30503"
+msgid "Service"
+msgstr ""
+
+msgctxt "#30571"
+msgid "Startup Delay (seconds)"
+msgstr ""
+
+msgctxt "#30572"
+msgid "Background Service"
+msgstr ""
+
+msgctxt "#30573"
+msgid "Update on Login"
+msgstr ""
+
+msgctxt "#30574"
+msgid "Service Schedule Type"
+msgstr ""
+
+msgctxt "#30575"
+msgid "Interval (hours)"
+msgstr ""
+
+msgctxt "#30576"
+msgid "Service Time"
+msgstr ""
+
+msgctxt "#30504"
+msgid "Scheduler"
+msgstr ""
+
+msgctxt "#30577"
+msgid "Watch Timers require External Player (set in Playback)"
+msgstr ""
+
+msgctxt "#30578"
+msgid "Use Task Scheduler on Windows"
+msgstr ""
+
+msgctxt "#30579"
+msgid "python(w) exe"
+msgstr ""
+
+msgctxt "#30505"
+msgid "Playback"
+msgstr ""
+
+msgctxt "#30580"
+msgid "Use External Player for Watch Timers"
+msgstr ""
+
+msgctxt "#30581"
+msgid "External Player (eg ffplay)"
+msgstr ""
+
+msgctxt "#30582"
+msgid "External Player Arguments"
+msgstr ""
+
+msgctxt "#30506"
+msgid "Debug"
+msgstr ""
+
+msgctxt "#30583"
+msgid "Debugging Menu Items"
+msgstr ""
+
+msgctxt "#30584"
+msgid "NOTE: This will prevent recording. Only use it for debugging."
+msgstr ""
+
+msgctxt "#30585"
+msgid "Debug ffmpeg stdout/stderr"
+msgstr ""
+
+msgctxt "#30586"
+msgid "Use crontab on Linux"
+msgstr ""
+
+msgctxt "#30587"
+msgid "Use Cron for kodi addon"
+msgstr ""

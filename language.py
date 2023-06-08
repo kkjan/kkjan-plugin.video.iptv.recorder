@@ -30,6 +30,7 @@ if __name__ == "__main__":
             ids_range = range(30000, 31000)
             ids_reserved = [int(m.msgctxt[1:]) for m in po]
             ids_available = [x for x in ids_range if x not in ids_reserved]
+            print(ids_available)
             print("New text to translate found : %s" % missing)
             for text in missing:
                 id = ids_available.pop(0)
