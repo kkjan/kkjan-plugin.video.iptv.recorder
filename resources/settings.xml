@@ -651,10 +651,10 @@
 					<default>false</default>
 					<dependencies>
 						<dependency type="visible">
-							<or>
+							<and>
 								<condition on="property" name="infobool">System.Platform.Linux</condition>
 								<condition on="property" name="infobool" operator="!is">System.Platform.Android</condition>
-							</or>
+							</and>
 						</dependency>
 						<dependency type="enable">
 							<or>

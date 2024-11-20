@@ -397,3 +397,11 @@ msgstr "Updating database"
 msgctxt "#30098"
 msgid "Database not found"
 msgstr "Database not found, please retry after few seconds ..."
+
+msgctxt "#30588"
+msgid "File"
+msgstr "Datei"
+
+msgctxt "#30589"
+msgid "of"
+msgstr "von"

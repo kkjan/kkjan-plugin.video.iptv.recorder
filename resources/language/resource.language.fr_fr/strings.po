@@ -397,3 +397,12 @@ msgstr "Mise à jour de la base de données"
 msgctxt "#30098"
 msgid "Database not found"
 msgstr "Base de données non trouvée, veuillez réessayer dans quelques secondes ..."
+
+
+msgctxt "#30588"
+msgid "File"
+msgstr "Fichier"
+
+msgctxt "#30589"
+msgid "of"
+msgstr "sur

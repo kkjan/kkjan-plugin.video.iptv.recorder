@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.iptv.recorder" version="0.3.1~alpha3" name="IPTV Recorder" provider-name="primaeval, Chychy, Dob!, Publish3r">
+<addon id="plugin.video.iptv.recorder" version="0.3.1~alpha5" name="IPTV Recorder" provider-name="primaeval, Chychy, Dob!, Publish3r">
   <requires>
     <import addon="xbmc.python" version="3.0.0" />
     <import addon="script.module.xbmcswift2" />
@@ -40,30 +40,39 @@ ffmpeg simply copies the stream into a transport stream container.
     <forum>https://forum.kodi.tv/showthread.php?tid=329991</forum>
     <language>en fr de</language>
     <news>
-  version 0.3.1~alpha3
-- Fix renew job after reboot (Task in AlarmClock scheduler is lost in Kodi after reboot)
-- Implement "Cron for Kodi" addon: Now is possible use Cron for Kodi addon (if it's installed) to schedule recording instead scheduler/cron
+      version 0.3.1~alpha5
+- now support import channels and EPG from all enabled iptvsimple config files (instance-XX.xml)
+  </news>
+    <news>
+        version 0.3.1~alpha4
+  - episode-num system onscreen added
+  -fix last mounth conversion locale
     </news>
     <news>
-  version 0.3.1~alpha2
-- settings.xml converted to new format
-- Implemented cron for linux system for schedule job
-- Fix xbmc import in task scheduler/cron job (now job for task scheduler/cron no import any xbmc module)
-- Fix schedule record task from EPG, when python locale and kodi translation of months names are diferent (for example in slovak in python locale is 1.marec (1. march) and  in kodi translation is 1.marca)
+    version 0.3.1~alpha3
+  - Fix renew job after reboot (Task in AlarmClock scheduler is lost in Kodi after reboot)
+  - Implement "Cron for Kodi" addon: Now is possible use Cron for Kodi addon (if it's installed) to schedule recording instead scheduler/cron
     </news>
     <news>
-version 0.2.0
-- Compatibility with Kodi Matrix.
-- Add some missing translations.
-- Improve "Sort Channels by" settings.
-- Add channel icon in the record list.
-- Improve encoding detection of the XML TV file.
-- Fix search input not supporting non ascii character.
-- Fix kodi crash on startup when user have rules to renew jobs.
-- Fix and improve "record and play" feature.
-- Reducing default startup time to 20 seconds.
-- Add error messag when trying to access database not created.
-- Exit the service smoothly and fastly if the user request Kodi to exit before the startup delay.
+    version 0.3.1~alpha2
+  - settings.xml converted to new format
+  - Implemented cron for linux system for schedule job
+  - Fix xbmc import in task scheduler/cron job (now job for task scheduler/cron no import any xbmc module)
+  - Fix schedule record task from EPG, when python locale and kodi translation of months names are diferent (for example in slovak in python locale is 1.marec (1. march) and  in kodi translation is 1.marca)
+    </news>
+    <news>
+  version 0.2.0
+  - Compatibility with Kodi Matrix.
+  - Add some missing translations.
+  - Improve "Sort Channels by" settings.
+  - Add channel icon in the record list.
+  - Improve encoding detection of the XML TV file.
+  - Fix search input not supporting non ascii character.
+  - Fix kodi crash on startup when user have rules to renew jobs.
+  - Fix and improve "record and play" feature.
+  - Reducing default startup time to 20 seconds.
+  - Add error messag when trying to access database not created.
+  - Exit the service smoothly and fastly if the user request Kodi to exit before the startup delay.
     </news>
     <assets>
       <icon>icon.png</icon>

@@ -27,7 +27,7 @@ import sys
 import threading
 import time
 import xbmcvfs
-
+import time
 try:
     from urllib.parse import quote, quote_plus, unquote_plus
     from html import unescape as html_unescape
@@ -48,10 +48,14 @@ def addon_id():
     return xbmcaddon.Addon().getAddonInfo('id')
 
 
-def log(v):
-    xbmc.log(repr(v), xbmc.LOGERROR)
+def logError(v):
+    xbmc.log("[plugin.video.iptv.recorder] "+repr(v), xbmc.LOGERROR)
 
+def logInfo(v):
+    xbmc.log("[plugin.video.iptv.recorder] "+repr(v), xbmc.LOGINFO)
 
+def logDebug(v):
+    xbmc.log("[plugin.video.iptv.recorder] "+repr(v), xbmc.LOGDEBUG)
 
 plugin = Plugin()
 
@@ -372,7 +376,7 @@ def delete_all_jobs_noask():
 
 @plugin.route('/delete_all_jobs')
 def delete_all_jobs(ask=True):
-    log('[plugin.video.iptv.recorder] Delete all job start') 
+    logInfo('Delete all job start') 
     if ask and not (xbmcgui.Dialog().yesno("IPTV Recorder", get_string("Delete All Jobs?"))):
         return
 
@@ -384,16 +388,16 @@ def delete_all_jobs(ask=True):
     conn.close()
 
     for job  in jobs:
-        log('[plugin.video.iptv.recorder] Delete job '+','.join(job))
+        logDebug('Delete job '+','.join(job))
         delete_job(job[0], kill=True, ask=False)
     
     
     refresh()
-    log('[plugin.video.iptv.recorder] Delete all job end') 
+    logInfo('Delete all job end') 
 
 @plugin.route('/delete_job/<job>')
 def delete_job(job, kill=True, ask=True):
-    log('[plugin.video.iptv.recorder] Delete job start %s' % job) 
+    logInfo('Delete job start %s' % job) 
     global lock
     conn = sqlite3.connect(xbmcvfs.translatePath('%sxmltv.db' % plugin.addon.getAddonInfo('profile')), timeout=60, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
     cursor = conn.cursor()
@@ -421,7 +425,7 @@ def delete_job(job, kill=True, ask=True):
             cjobs = manager.getJobs()
             for cjob in list(cjobs):
                 if cjob.name==job:
-                    log("[plugin.video.iptv.recorder] Delete cronxbmc job:%s ID: %s " %(cjob.name,cjob.id))
+                    logDebug("Delete cronxbmc job:%s ID: %s " %(cjob.name,cjob.id))
                     manager.deleteJob(cjob.id)
 
     else:
@@ -450,7 +454,7 @@ def delete_job(job, kill=True, ask=True):
         conn.execute("DELETE FROM jobs WHERE uuid=?", (job, ))
         conn.commit()
         conn.close()
-    log('[plugin.video.iptv.recorder] Delete job end %s' % job) 
+    logInfo('Delete job end %s' % job) 
     refresh()
 
 
@@ -600,7 +604,7 @@ def record_epg(channelname, name, start, stop):
     start = get_utc_from_string(start)
     stop = get_utc_from_string(stop)
 
-    log("Scheduling record for '{}: {} ({} to {})'".format(channelname, name, start, stop))
+    logInfo("Scheduling record for '{}: {} ({} to {})'".format(channelname, name, start, stop))
     #TODO get and set channel ID and programe ID for jspn generating
     do_refresh = False
     watch = False
@@ -647,9 +651,9 @@ def record_once_thread(lock,programmeid, do_refresh=True, watch=False, remind=Fa
 
     programme_from_database = None
     if programmeid:
-        programme_from_database = cursor.execute('SELECT channelid, title, sub_title, start AS "start [TIMESTAMP]", stop AS "stop [TIMESTAMP]", date, description, episode, categories FROM programmes WHERE uid=? LIMIT 1', (programmeid, )).fetchone()
+        programme_from_database = cursor.execute('SELECT channelid, title, sub_title, start AS "start [TIMESTAMP]", stop AS "stop [TIMESTAMP]", date, description, episode, categories,uid FROM programmes WHERE uid=? LIMIT 1', (programmeid, )).fetchone()
     elif channelid:
-        all_programme_from_database = cursor.execute('SELECT channelid, title, sub_title, start AS "start [TIMESTAMP]", stop AS "stop [TIMESTAMP]", date, description, episode, categories FROM programmes WHERE channelid=? AND ((?<=start AND ?<=stop AND ?>=start) or (?>=start AND ?<=stop) OR (?>=start AND ?<=stop AND ?>=stop) OR (?<=start AND ?>=stop))', (channelid, start, stop, stop, start, stop, start, start, stop, start, stop)).fetchall()
+        all_programme_from_database = cursor.execute('SELECT channelid, title, sub_title, start AS "start [TIMESTAMP]", stop AS "stop [TIMESTAMP]", date, description, episode, categories, uid FROM programmes WHERE channelid=? AND ((?<=start AND ?<=stop AND ?>=start) or (?>=start AND ?<=stop) OR (?>=start AND ?<=stop AND ?>=stop) OR (?<=start AND ?>=stop))', (channelid, start, stop, stop, start, stop, start, start, stop, start, stop)).fetchall()
         longest_programme_duration = timedelta(seconds=0)
         for current_programme_in_database in all_programme_from_database:
             current_programme_duration = min(current_programme_in_database[4], stop) - max(current_programme_in_database[3], start)
@@ -661,7 +665,9 @@ def record_once_thread(lock,programmeid, do_refresh=True, watch=False, remind=Fa
     sub_title = ''
     episode = ''
     if programme_from_database:
-        temp_channelid, temp_title, temp_sub_title, temp_start, temp_stop, temp_date, temp_description, temp_episode, temp_categories = programme_from_database
+        temp_channelid, temp_title, temp_sub_title, temp_start, temp_stop, temp_date, temp_description, temp_episode, temp_categories, temp_uid = programme_from_database
+        if programmeid is None:
+            programmeid=temp_uid
         programme = {"channelid":temp_channelid, "title":temp_title, "sub_title":temp_sub_title, "start":datetime2timestamp(temp_start), "stop":datetime2timestamp(temp_stop), "date":temp_date, "description":temp_description, "episode":temp_episode, "categories":temp_categories}
         if start is None:
             start = temp_start
@@ -703,7 +709,7 @@ def record_once_thread(lock,programmeid, do_refresh=True, watch=False, remind=Fa
             channel = cursor.execute("SELECT uid, name, tvg_name, tvg_id, tvg_logo, groups, url FROM streams WHERE tvg_name=?", (channelname,)).fetchone()
 
     if not channel:
-        log("[plugin.video.iptv.recorder] No channel %s" % channelname, xbmc.LOGERROR)
+        logInfo("No channel %s" % channelname)
         return
 
     uid, name, tvg_name, tvg_id, tvg_logo, groups, url = channel
@@ -712,7 +718,7 @@ def record_once_thread(lock,programmeid, do_refresh=True, watch=False, remind=Fa
         channelname = name
     nfo["channel"] = {"channelname":channelname, "thumbnail":thumbnail, "channelid":tvg_id}
     if not url:
-        log("[plugin.video.iptv.recorder] No url for %s" % channelname, xbmc.LOGERROR)
+        logInfo("No url for %s" % channelname)
         return
 
     url_headers = url.split('|', 1)
@@ -1074,18 +1080,18 @@ def renew_jobs():
 
         #TODO reduce time of job if already started
         if xbmcvfs.exists(pyjob+'.pid'):
-            log("[plugin.video.iptv.recorder]  job is already started: "+job)
+            logInfo(" job is already started: "+job)
             continue
-        log("[plugin.video.iptv.recorder] Renew jobs: "+job)
+        logInfo("Renew jobs: "+job)
         if (windows() and (plugin.get_setting('task.scheduler', str) == 'true')) or (linux() and (plugin.get_setting('task.cron', str)== 'true')):
-            log("[plugin.video.iptv.recorder] Renew jobs cron/scheduller: "+job)
+            logInfo("Renew jobs cron/scheduller: "+job)
             if immediate:
                 cmd = 'RunScript(%s)' % (pyjob)
                 xbmc.executebuiltin(cmd)
             else:
                 pass
         else:
-            log("[plugin.video.iptv.recorder] Renew jobs no cron/scheduller: "+job)
+            logInfo("Renew jobs no cron/scheduller: "+job)
             now = datetime.now()
             diff = local_starttime - now
             minutes = ((diff.days * 86400) + diff.seconds) / 60
@@ -1098,7 +1104,7 @@ def renew_jobs():
                     xbmcvfs.delete(pyjob)
             else:
                 if not plugin.get_setting('task.cronxbmc', str) == 'true':
-                    log("[plugin.video.iptv.recorder] Renew jobs Alarm clock: "+job)
+                    logInfo("Renew jobs Alarm clock: "+job)
                     cmd = 'AlarmClock(%s, RunScript(%s), %d, True)' % (job, pyjob, minutes)
                     xbmc.executebuiltin(cmd)
 
@@ -1107,7 +1113,7 @@ def renew_jobs():
 def sane_name(name):
     if not name:
         return
-    if windows() or (plugin.get_setting('filename.urlencode', str) == 'true'):
+    if  (plugin.get_setting('filename.urlencode', str) == 'true'): 
         name = quote(name.encode('utf-8'))
         name = name.replace("%20",' ')
         name = name.replace('/',"%2F")
@@ -2311,11 +2317,14 @@ def group(channelgroup=None,section=None):
     logos = {}
     channel_logos = {}
     if section == "EPG":
-        channels = cursor.execute("SELECT channels.id, channels.name, channels.icon FROM channels" + order_channels).fetchall()
+        sql="SELECT channels.id, channels.name, channels.icon FROM channels" + order_channels
+        logDebug("SQL query: "+sql)
+        channels = cursor.execute("SELECT DISTINCT channels.uid, channels.id, channels.name, channels.icon FROM channels" + order_channels).fetchall()
         streams = cursor.execute("SELECT tvg_id, tvg_logo FROM streams").fetchall()
         #logos = {x[0]:x[1] for x in streams}
         logos = dict((x[0],x[1]) for x in streams)
-
+        logDebug("LEN channels: "+str(len(channels)))
+        logDebug("LEN streams: "+str(len(streams)))
         collection = channels
         show_now_next = plugin.get_setting('show.now.next.all', str) == "true"
     elif section == "FAVOURITES":
@@ -2355,12 +2364,11 @@ def group(channelgroup=None,section=None):
         #next_titles = {x[0]:(x[1],x[2],x[3]) for x in next_titles}
         next_titles = dict((x[0],(x[1],x[2],x[3])) for x in next_titles)
 
+    logDebug("LEN Collection: "+str(len(collection)))
     for stream_channel in collection:
-        #log(stream_channel)
-
         url = ""
         if section == "EPG":
-            id, name, icon = stream_channel
+            uid, id, name, icon = stream_channel
             channelname = name
             channelid = id
             url = stream_urls.get(channelid)
@@ -2615,18 +2623,18 @@ def service():
 
 @plugin.route('/full_service')
 def full_service():
-    log("[plugin.video.iptv.recorder] service_thread start")
+    logInfo("service_thread start")
     xmltv()
     service_thread()
-    log("[plugin.video.iptv.recorder] service_thread start")
+    logInfo("service_thread start")
 
 @plugin.route('/service_thread')
 def service_thread():
-    log("[plugin.video.iptv.recorder] service_thread start")
+    logInfo("service_thread start")
     conn = sqlite3.connect(xbmcvfs.translatePath('%sxmltv.db' % plugin.addon.getAddonInfo('profile')), timeout=60, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
     cursor = conn.cursor()
     if not check_has_db_filled_show_error_message_ifn(cursor):
-        log("[plugin.video.iptv.recorder] service_thread end -not check_has_db_filled_show_error_message_ifn")
+        logDebug("service_thread end -not check_has_db_filled_show_error_message_ifn")
         return
 
     rules = cursor.execute('SELECT uid, channelid, channelname, title, start AS "start [TIMESTAMP]", stop AS "stop [TIMESTAMP]", description, type, name FROM rules ORDER by channelname, title, start, stop').fetchall()
@@ -2738,7 +2746,7 @@ def service_thread():
     conn.commit()
     cursor.close()
     refresh()
-    log("[plugin.video.iptv.recorder] service_thread end")
+    logInfo("service_thread end")
 
 @plugin.route('/delete_recording/<label>/<path>')
 def delete_recording(label, path):
@@ -2785,7 +2793,7 @@ def find_files(root):
         file_ext_all=plugin.get_setting('ffmpeg.ext.previous', str).split(';')
         file_ext_all.append(plugin.get_setting('ffmpeg.ext', str))
         file_ext_all=['.'+s for s in file_ext_all]
-        log('[plugin.video.iptv.recorder]  '+' '.join(file_ext_all))
+        logDebug(' '+' '.join(file_ext_all))
         if file_ext in file_ext_all:
             file = os.path.join(xbmcvfs.translatePath(root), file)
             file_list.append(file)
@@ -2824,7 +2832,7 @@ def recordings():
 
     for path in found_files:
         thumbnail = None
-        log("[plugin.video.iptv.recorder] Path: %s" %(path))
+        logDebug("Path: %s" %(path))
         try:
             label = ""
             filename= os.path.splitext(path)[0]
@@ -2841,7 +2849,7 @@ def recordings():
                 date = "(%s) " % programme.get('date', '')
 
             start = programme.get('start', None)
-            log("[plugin.video.iptv.recorder] Start: %d" %(start))
+            logDebug("Start: %d" %(start))
             dat=''
             if start is not None:
                 starts.append(start)
@@ -2866,7 +2874,7 @@ def recordings():
             description = ""
             starts.append(0)
             label = unquote_plus(label)
-            log("[plugin.video.iptv.recorder] Error: %s"%(e))
+            logError("Error: %s"%(e))
 
         context_items = []
 
@@ -2875,10 +2883,10 @@ def recordings():
         if plugin.get_setting('external.player', str):
             context_items.append((get_string("External Player"), 'RunPlugin(%s)' % (plugin_url_for(plugin, play_external, path=path))))
         #context_items.append((get_string("Convert to mp4"), 'RunPlugin(%s)' % (plugin_url_for(plugin, convert, path=path))))
-        log("[plugin.video.iptv.recorder]"+label)
+        logDebug("[plugin.video.iptv.recorder]"+label)
         if path in activejobs:
                label=label+" [COLOR red]Recording[/COLOR]"
-        log(label)
+        logDebug(label)
         items.append({
             'thumbnail': thumbnail,
             'label': label,
@@ -2945,7 +2953,7 @@ def find_xml_bytes_encoding(data_bytes):
 
 @plugin.route('/xmltv')
 def xmltv():
-    log("[plugin.video.iptv.recorder] service_thread start")
+    logInfo("service_thread start")
     load_groups = plugin.get_storage('load_groups')
     load_channels = {}
 
@@ -2959,176 +2967,204 @@ def xmltv():
     streams_to_insert = []
     channels_to_insert = []
     programmes_to_insert = []
+    paths = []
 
     for x in ["1","2"]:
+        paths.clear()
         dialog.update(0, message=get_string("Finding streams"))
         mode = plugin.get_setting('external.m3u.'+x, str)
         if mode == "0":
             if x == "1":
                 try:
-                    m3uPathType = xbmcaddon.Addon('pvr.iptvsimple').getSetting('m3uPathType')
-
-                    if m3uPathType == "0":
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('m3uPath')
-                    else:
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('m3uUrl')
+                    iptvs_conf_path=xbmcvfs.translatePath(xbmcaddon.Addon('pvr.iptvsimple').getAddonInfo('profile'))
+                    for file in os.listdir(iptvs_conf_path):
+                        if file.startswith('instance-settings-') and file.endswith('.xml'):
+                            f = open(iptvs_conf_path+file,'r')
+                            settings = f.read()
+                            f.close()
+                            enabled=re.search('<setting id="kodi_addon_instance_enabled".*>(.*?)<\/setting>',settings).group(1)
+                            if enabled=="true":
+                                m3uPathType=re.search('<setting id="m3uPathType">(.*?)<\/setting>',settings).group(1)
+                                if m3uPathType == "0":
+                                    paths.append(re.search("<setting id=\"m3uPath\">(.+)<\/setting>",settings).group(1))
+                                else:
+                                    paths.append(re.search("<setting id=\"m3uUrl\">(.+)<\/setting>",settings).group(1))
                 except:
-                    path = ""
+                    paths.clear()
             else:
-                path = ""
+                paths.clear()
         elif mode == "1":
-            path = plugin.get_setting('external.m3u.file.'+x, str)
+            paths.append(plugin.get_setting('external.m3u.file.'+x, str))
         else:
-            path = plugin.get_setting('external.m3u.url.'+x, str)
+            paths.append(plugin.get_setting('external.m3u.url.'+x, str))
+        totalf=len(paths)
+        if totalf>0:
+            l=0
+            for path in paths:
+                l+=1
+                m3uFile = 'special://profile/addon_data/plugin.video.iptv.recorder/channels'+x+'.m3u'
+                xbmcvfs.copy(path, m3uFile)
+                f = open(xbmcvfs.translatePath(m3uFile),'rb')
+                data = f.read()
+                if "m3u8" in path.lower():
+                    data = data.decode('utf8')
+                    #log("m3u8")
+                else:
+                    encoding = chardet.detect(data)
+                    logDebug(encoding)
+                    data = data.decode(encoding['encoding'])
 
-        if path:
+                settings_shift = float(plugin.get_setting('external.m3u.shift.'+x, str))
+                global_shift = settings_shift
 
-            m3uFile = 'special://profile/addon_data/plugin.video.iptv.recorder/channels'+x+'.m3u'
-
-            xbmcvfs.copy(path, m3uFile)
-            f = open(xbmcvfs.translatePath(m3uFile),'rb')
-            data = f.read()
-            if "m3u8" in path.lower():
-                data = data.decode('utf8')
-                #log("[plugin.video.iptv.recorder] m3u8")
-            else:
-                encoding = chardet.detect(data)
-                log(encoding)
-                data = data.decode(encoding['encoding'])
-
-            settings_shift = float(plugin.get_setting('external.m3u.shift.'+x, str))
-            global_shift = settings_shift
-
-            header = re.search('#EXTM3U(.*)', data)
-            if header:
-                tvg_shift = re.search('tvg-shift="(.*?)"', header.group(1))
-                if tvg_shift:
-                    tvg_shift = tvg_shift.group(1)
+                header = re.search('#EXTM3U(.*)', data)
+                if header:
+                    tvg_shift = re.search('tvg-shift="(.*?)"', header.group(1))
                     if tvg_shift:
-                        global_shift = float(tvg_shift) + settings_shift
+                        tvg_shift = tvg_shift.group(1)
+                        if tvg_shift:
+                            global_shift = float(tvg_shift) + settings_shift
 
-            channels = re.findall('#EXTINF:(.*?)(?:\r\n|\r|\n)(.*?)(?:\r\n|\r|\n|$)', data, flags=(re.I | re.DOTALL))
-            total = len(channels)
-            i = 0
-            for channel in channels:
+                channels = re.findall('#EXTINF:(.*?)(?:\r\n|\r|\n)(.*?)(?:\r\n|\r|\n|$)', data, flags=(re.I | re.DOTALL))
+                
+                total = len(channels)
+                i = 0
+                for channel in channels:
+                    name = None
+                    if ',' in re.sub('tvg-[a-z]+"[^"]*"','',channel[0], flags=re.I):
+                        name = channel[0].rsplit(',', 1)[-1].strip()
+                        #name = name.encode("utf8")
 
-                name = None
-                if ',' in re.sub('tvg-[a-z]+"[^"]*"','',channel[0], flags=re.I):
-                    name = channel[0].rsplit(',', 1)[-1].strip()
-                    #name = name.encode("utf8")
+                    tvg_name = re.search('tvg-name="(.*?)"', channel[0], flags=re.I)
+                    if tvg_name:
+                        tvg_name = tvg_name.group(1) or None
+                    #else:
+                        #tvg_name = name         
+                    tvg_id = re.search('tvg-id="(.*?)"', channel[0], flags=re.I)
+                    if tvg_id:
+                        tvg_id = tvg_id.group(1) or None
 
-                tvg_name = re.search('tvg-name="(.*?)"', channel[0], flags=re.I)
-                if tvg_name:
-                    tvg_name = tvg_name.group(1) or None
-                #else:
-                    #tvg_name = name
+                    tvg_logo = re.search('tvg-logo="(.*?)"', channel[0], flags=re.I)
+                    if tvg_logo:
+                        tvg_logo = tvg_logo.group(1) or None
 
-                tvg_id = re.search('tvg-id="(.*?)"', channel[0], flags=re.I)
-                if tvg_id:
-                    tvg_id = tvg_id.group(1) or None
+                    shifts[tvg_id] = global_shift
+                    tvg_shift = re.search('tvg-shift="(.*?)"', channel[0], flags=re.I)
+                    if tvg_shift:
+                        tvg_shift = tvg_shift.group(1)
+                        if tvg_shift and tvg_id:
+                            shifts[tvg_id] = float(tvg_shift) + settings_shift
 
-                tvg_logo = re.search('tvg-logo="(.*?)"', channel[0], flags=re.I)
-                if tvg_logo:
-                    tvg_logo = tvg_logo.group(1) or None
+                    url = channel[1]
+                    search = plugin.get_setting('m3u.regex.search', str)
+                    replace = plugin.get_setting('m3u.regex.replace', str)
+                    if search:
+                        url = re.sub(search, replace, url)
 
-                shifts[tvg_id] = global_shift
-                tvg_shift = re.search('tvg-shift="(.*?)"', channel[0], flags=re.I)
-                if tvg_shift:
-                    tvg_shift = tvg_shift.group(1)
-                    if tvg_shift and tvg_id:
-                        shifts[tvg_id] = float(tvg_shift) + settings_shift
+                    groups = re.search('group-title="(.*?)"', channel[0], flags=re.I)
+                    if groups:
+                        groups = groups.group(1) or None
 
-                url = channel[1]
-                search = plugin.get_setting('m3u.regex.search', str)
-                replace = plugin.get_setting('m3u.regex.replace', str)
-                if search:
-                    url = re.sub(search, replace, url)
+                    streams_to_insert.append((name, tvg_name, tvg_id, tvg_logo, groups, url.strip(), i))
 
-                groups = re.search('group-title="(.*?)"', channel[0], flags=re.I)
-                if groups:
-                    groups = groups.group(1) or None
-
-                streams_to_insert.append((name, tvg_name, tvg_id, tvg_logo, groups, url.strip(), i))
-
-                i += 1
-                percent = 0 + int(100.0 * i / total)
-                dialog.update(percent, message=get_string("Finding streams"))
-
+                    i += 1
+                    percent = 0 + int(100.0 * i / total)
+                    if(totalf>1):
+                        msg=get_string("File")+" "+str(l)+" "+get_string("of")+" "+str(totalf)+"\n"+get_string("Finding streams")
+                    else:
+                        msg=get_string("Finding streams")
+                    dialog.update(percent, message=msg)
+                
     xml_filename_to_file_content = {}
     for x in ["1","2"]:
-
+        paths.clear()
         mode = plugin.get_setting('external.xmltv.'+x, str)
         if mode == "0":
             if x == "1":
                 try:
-                    epgPathType = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgPathType')
-                    if epgPathType == "0":
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgPath')
-                    else:
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgUrl')
+                    iptvs_conf_path=xbmcvfs.translatePath(xbmcaddon.Addon('pvr.iptvsimple').getAddonInfo('profile'))
+                    for file in os.listdir(iptvs_conf_path):
+                        if file.startswith('instance-settings-') and file.endswith('.xml'):
+                            f = open(iptvs_conf_path+file,'r')
+                            settings = f.read()
+                            f.close()
+                            enabled=re.search('<setting id="kodi_addon_instance_enabled".*>(.*?)<\/setting>',settings).group(1)
+                            if enabled=="true":
+                                epgPathType=re.search('<setting id="epgPathType">(.*?)<\/setting>',settings).group(1)
+                                if epgPathType == "0":
+                                    paths.append(re.search("<setting id=\"epgPath\">(.+)<\/setting>",settings).group(1))
+                                else:
+                                    paths.append(re.search("<setting id=\"epgUrl\">(.+)<\/setting>",settings).group(1))
                 except:
-                    path = ""
+                    paths.clear()
             else:
-                path = ""
+                paths.clear()
         elif mode == "1":
-            path = plugin.get_setting('external.xmltv.file.'+x, str)
+            paths.append(plugin.get_setting('external.xmltv.file.'+x, str))
         else:
-            path = plugin.get_setting('external.xmltv.url.'+x, str)
+            paths.append(plugin.get_setting('external.xmltv.url.'+x, str))
+        totalf=len(paths)
+        if totalf>0:
+            l=0
+            for path in paths:
+                l+=1
+                xml = os.path.join(profilePath, 'xmltv'+x+'.xml')
+                dialog.update(0, message=get_string("Copying xmltv file"))
+                xbmcvfs.copy(path, xml)
 
-        if path:
-            xml = os.path.join(profilePath, 'xmltv'+x+'.xml')
-            dialog.update(0, message=get_string("Copying xmltv file"))
-            xbmcvfs.copy(path, xml)
+                f = xbmcvfs.File(xml, "rb")
+                data_bytes = bytes(f.readBytes())
+                f.close()
+                magic = data_bytes[:3]
+                if magic == b"\x1f\x8b\x08":
+                    tmp = os.path.join(profilePath, 'xmltv'+x+'.gz')
+                    xbmcvfs.delete(tmp)
+                    xbmcvfs.rename(xml, tmp) #Not really useful but it can help for debuging
+                    dialog.update(0, message=get_string("Unzipping xmltv file"))
+                    compressedFile = io.BytesIO()
+                    compressedFile.write(data_bytes)
+                    compressedFile.seek(0)
+                    decompressedFile = gzip.GzipFile(fileobj=compressedFile, mode='rb')
+                    data_bytes = decompressedFile.read()
 
-            f = xbmcvfs.File(xml, "rb")
-            data_bytes = bytes(f.readBytes())
-            f.close()
-            magic = data_bytes[:3]
-            if magic == b"\x1f\x8b\x08":
-                tmp = os.path.join(profilePath, 'xmltv'+x+'.gz')
-                xbmcvfs.delete(tmp)
-                xbmcvfs.rename(xml, tmp) #Not really useful but it can help for debuging
-                dialog.update(0, message=get_string("Unzipping xmltv file"))
-                compressedFile = io.BytesIO()
-                compressedFile.write(data_bytes)
-                compressedFile.seek(0)
-                decompressedFile = gzip.GzipFile(fileobj=compressedFile, mode='rb')
-                data_bytes = decompressedFile.read()
+                encoding = find_xml_bytes_encoding(data_bytes)
+                data = data_bytes.decode(encoding)
 
-            encoding = find_xml_bytes_encoding(data_bytes)
-            data = data_bytes.decode(encoding)
+                xml_filename_to_file_content[xml] = data
 
-            xml_filename_to_file_content[xml] = data
+                htmlparser = HTMLParser()
 
-            htmlparser = HTMLParser()
+                dialog.update(0, message=get_string("Finding channels"))
+                match = re.findall('<channel(.*?)</channel>', data, flags=(re.I|re.DOTALL))
+                if match:
+                    total = len(match)
+                    i = 0
+                    match_pattern = re.compile('(id="(.*?)")|(<display-name.*?>(.*?)</display-name)|(<icon.*?src="(.*?)")')
 
-            dialog.update(0, message=get_string("Finding channels"))
-            match = re.findall('<channel(.*?)</channel>', data, flags=(re.I|re.DOTALL))
-            if match:
-                total = len(match)
-                i = 0
-                match_pattern = re.compile('(id="(.*?)")|(<display-name.*?>(.*?)</display-name)|(<icon.*?src="(.*?)")')
+                    for m in match:
+                        data_found = match_pattern.findall(m)
+                        id = None
+                        name = None
+                        icon = None
+                        if data_found:
+                            for current_data_found in data_found:
+                                if current_data_found[1]:
+                                    id = htmlparser.unescape(current_data_found[1])
+                                elif current_data_found[3]:
+                                    name = htmlparser.unescape(current_data_found[3])
+                                elif current_data_found[5]:
+                                    icon = current_data_found[5]
 
-                for m in match:
-                    data_found = match_pattern.findall(m)
-                    id = None
-                    name = None
-                    icon = None
-                    if data_found:
-                        for current_data_found in data_found:
-                            if current_data_found[1]:
-                                id = htmlparser.unescape(current_data_found[1])
-                            elif current_data_found[3]:
-                                name = htmlparser.unescape(current_data_found[3])
-                            elif current_data_found[5]:
-                                icon = current_data_found[5]
+                        if id and name:
+                            channels_to_insert.append((id, name, icon))
 
-                    if id and name:
-                        channels_to_insert.append((id, name, icon))
-
-                    i += 1
-                    percent = 0 + int(100.0 * i / total)
-                    dialog.update(percent, message=get_string("Finding channels"))
+                        i += 1
+                        percent = 0 + int(100.0 * i / total)
+                        if (totalf>1):
+                            msg=get_string("File")+" "+str(l)+" "+get_string("of")+" "+str(totalf)+"\n"+get_string("Finding channels")
+                        else:
+                            msg=get_string("Finding channels")
+                        dialog.update(percent, message=msg)
 
     '''
     missing_streams = conn.execute('SELECT name, tvg_name FROM streams WHERE tvg_id IS null OR tvg_id IS ""').fetchall()
@@ -3154,143 +3190,162 @@ def xmltv():
         if groups in load_groups:
             load_channels[tvg_id] = ""
 
+    
     for x in ["1","2"]:
-
+        paths.clear()
         mode = plugin.get_setting('external.xmltv.'+x, str)
         if mode == "0":
             if x == "1":
                 try:
-                    epgPathType = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgPathType')
-                    if epgPathType == "0":
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgPath')
-                    else:
-                        path = xbmcaddon.Addon('pvr.iptvsimple').getSetting('epgUrl')
+                    iptvs_conf_path=xbmcvfs.translatePath(xbmcaddon.Addon('pvr.iptvsimple').getAddonInfo('profile'))
+                    for file in os.listdir(iptvs_conf_path):
+                        if file.startswith('instance-settings-') and file.endswith('.xml'):
+                            f = open(iptvs_conf_path+file,'r')
+                            settings = f.read()
+                            f.close()
+                            enabled=re.search('<setting id="kodi_addon_instance_enabled".*>(.*?)<\/setting>',settings).group(1)
+                            if enabled=="true":
+                                epgPathType=re.search('<setting id="epgPathType">(.*?)<\/setting>',settings).group(1)
+                                if epgPathType == "0":
+                                    paths.append(re.search("<setting id=\"epgPath\">(.+)<\/setting>",settings).group(1))
+                                else:
+                                    paths.append(re.search("<setting id=\"epgUrl\">(.+)<\/setting>",settings).group(1))
                 except:
-                    path = ""
+                    paths.clear()
             else:
-                path = ""
+                paths.clear()
         elif mode == "1":
-            path = plugin.get_setting('external.xmltv.file.'+x, str)
+            paths.append(plugin.get_setting('external.xmltv.file.'+x, str))
         else:
-            path = plugin.get_setting('external.xmltv.url.'+x, str)
+            paths.append(plugin.get_setting('external.xmltv.url.'+x, str))
+        totalf=len(paths)
+        if totalf>0:
+            l=0
+            for path in paths:
+                l+=1
+                xml = os.path.join(profilePath, 'xmltv'+x+'.xml')
 
-        if path:
+                data = xml_filename_to_file_content.get(xml)
 
-            xml = os.path.join(profilePath, 'xmltv'+x+'.xml')
+                htmlparser = HTMLParser()
 
-            data = xml_filename_to_file_content.get(xml)
+                dialog.update(0, message=get_string("Finding programmes"))
+                match = re.findall('<programme(.*?)</programme>', data, flags=(re.I|re.DOTALL))
+                if match:
+                    total = len(match)
+                    i = 0
+                    for m in match:
+                        xml = "" #'<programme%s</programme>' % m
 
-            htmlparser = HTMLParser()
+                        channel = re.search('channel="(.*?)"', m)
+                        if channel:
+                            channel = htmlparser.unescape(channel.group(1))
+                            if load_all == False and channel not in load_channels:
+                                continue
 
-            dialog.update(0, message=get_string("Finding programmes"))
-            match = re.findall('<programme(.*?)</programme>', data, flags=(re.I|re.DOTALL))
-            if match:
-                total = len(match)
-                i = 0
-                for m in match:
-                    xml = "" #'<programme%s</programme>' % m
+                        if channel in shifts:
+                            shift = shifts[channel]
+                        else:
+                            shift = None
 
-                    channel = re.search('channel="(.*?)"', m)
-                    if channel:
-                        channel = htmlparser.unescape(channel.group(1))
-                        if load_all == False and channel not in load_channels:
-                            continue
+                        start = re.search('start="(.*?)"', m)
+                        if start:
+                            start = start.group(1)
+                            start = xml2utc(start)
+                            if shift:
+                                start = start + timedelta(hours=shift)
+                        else:
+                            start = ''
 
-                    if channel in shifts:
-                        shift = shifts[channel]
-                    else:
-                        shift = None
+                        stop = re.search('stop="(.*?)"', m)
+                        if stop:
+                            stop = stop.group(1)
+                            stop = xml2utc(stop)
+                            if shift:
+                                stop = stop + timedelta(hours=shift)
+                        else:
+                            stop = ''
 
-                    start = re.search('start="(.*?)"', m)
-                    if start:
-                        start = start.group(1)
-                        start = xml2utc(start)
-                        if shift:
-                            start = start + timedelta(hours=shift)
-                    else:
-                        start = ''
+                        title = re.search('<title.*?>(.*?)</title', m, flags=(re.I|re.DOTALL))
+                        if title:
+                            title = htmlparser.unescape(title.group(1))
+                        search = plugin.get_setting('xmltv.title.regex.search', str)
+                        replace = plugin.get_setting('xmltv.title.regex.replace', str)
+                        if search:
+                            title = re.sub(search, replace, title)
+                        if title:
+                            title = title.strip()
+                        else:
+                            title = ''
 
-                    stop = re.search('stop="(.*?)"', m)
-                    if stop:
-                        stop = stop.group(1)
-                        stop = xml2utc(stop)
-                        if shift:
-                            stop = stop + timedelta(hours=shift)
-                    else:
-                        stop = ''
+                        sub_title = re.search('<sub-title.*?>(.*?)</sub-title', m, flags=(re.I|re.DOTALL))
+                        if sub_title:
+                            sub_title = htmlparser.unescape(sub_title.group(1))
+                        else:
+                            sub_title = ''
 
-                    title = re.search('<title.*?>(.*?)</title', m, flags=(re.I|re.DOTALL))
-                    if title:
-                        title = htmlparser.unescape(title.group(1))
-                    search = plugin.get_setting('xmltv.title.regex.search', str)
-                    replace = plugin.get_setting('xmltv.title.regex.replace', str)
-                    if search:
-                        title = re.sub(search, replace, title)
-                    if title:
-                        title = title.strip()
-                    else:
-                        title = ''
+                        description = re.search('<desc.*?>(.*?)</desc', m, flags=(re.I|re.DOTALL))
+                        if description:
+                            description = htmlparser.unescape(description.group(1))
 
-                    sub_title = re.search('<sub-title.*?>(.*?)</sub-title', m, flags=(re.I|re.DOTALL))
-                    if sub_title:
-                        sub_title = htmlparser.unescape(sub_title.group(1))
-                    else:
-                        sub_title = ''
+                        date = re.search('<date.*?>(.*?)</date', m)
+                        if date:
+                            date = date.group(1)
+                        else:
+                            date = start
 
-                    description = re.search('<desc.*?>(.*?)</desc', m, flags=(re.I|re.DOTALL))
-                    if description:
-                        description = htmlparser.unescape(description.group(1))
+                        cats = re.findall('<category.*?>(.*?)</category>', m, flags=(re.I|re.DOTALL))
+                        if cats:
+                            categories = htmlparser.unescape((', '.join(cats)))
+                        else:
+                            categories = ''
+                        cats = categories.lower()
+                        film_movie = ("movie" in cats) or ("film" in cats)
 
-                    date = re.search('<date.*?>(.*?)</date', m)
-                    if date:
-                        date = date.group(1)
-                    else:
-                        date = start
+                        #TODO other systems
+                        episode = re.findall('<episode-num system="(.*?)">(.*?)<', m, flags=(re.I|re.DOTALL))
+                        #episode = {x[0]:x[1] for x in episode}
+                        episode = dict((x[0],x[1]) for x in episode)
 
-                    cats = re.findall('<category.*?>(.*?)</category>', m, flags=(re.I|re.DOTALL))
-                    if cats:
-                        categories = htmlparser.unescape((', '.join(cats)))
-                    else:
-                        categories = ''
-                    cats = categories.lower()
-                    film_movie = ("movie" in cats) or ("film" in cats)
+                        SE = None
+                        if episode:
+                            if episode.get('xmltv_ns'):
+                                num = episode.get('xmltv_ns')
+                                parts = num.split('.')
+                                if len(parts) >= 2:
+                                    S = parts[0]
+                                    E = parts[1].split('/')[0]
+                                    S = int(S if S else 0) + 1
+                                    E = int(E if E else 0) + 1
+                                SE = "S%02dE%02d" % (S,E)
+                            elif episode.get('common'):
+                                SE = episode.get('common')
+                            elif episode.get('onscreen'):
+                                SE = episode.get('onscreen')
+                            elif episode.get('dd_progid'):
+                                num = episode.get('dd_progid')
+                                if num.startswith('EP') and date and len(date) == 8:
+                                    SE = "%s-%s-%s" % (date[0:4], date[4:6], date[6:8])
+                                elif num.startswith('MV'):
+                                    SE = "MOVIE"
+                        elif film_movie:
+                            SE = "MOVIE"
+                        episode = SE
 
-                    #TODO other systems
-                    episode = re.findall('<episode-num system="(.*?)">(.*?)<', m, flags=(re.I|re.DOTALL))
-                    #episode = {x[0]:x[1] for x in episode}
-                    episode = dict((x[0],x[1]) for x in episode)
+                        programmes_to_insert.append((channel, title, sub_title, start, stop, date, description, episode, categories, xml))
 
-                    SE = None
-                    if episode:
-                        if episode.get('xmltv_ns'):
-                            num = episode.get('xmltv_ns')
-                            parts = num.split('.')
-                            if len(parts) >= 2:
-                                S = parts[0]
-                                E = parts[1].split('/')[0]
-                                S = int(S if S else 0) + 1
-                                E = int(E if E else 0) + 1
-                            SE = "S%02dE%02d" % (S,E)
-                        elif episode.get('common'):
-                            SE = episode.get('common')
-                        elif episode.get('dd_progid'):
-                            num = episode.get('dd_progid')
-                            if num.startswith('EP') and date and len(date) == 8:
-                                SE = "%s-%s-%s" % (date[0:4], date[4:6], date[6:8])
-                            elif num.startswith('MV'):
-                                SE = "MOVIE"
-                    elif film_movie:
-                        SE = "MOVIE"
-                    episode = SE
-
-                    programmes_to_insert.append((channel, title, sub_title, start, stop, date, description, episode, categories, xml))
-
-                    i += 1
-                    percent = 0 + int(100.0 * i / total)
-                    dialog.update(percent, message=get_string("Finding programmes"))
+                        i += 1
+                        percent = 0 + int(100.0 * i / total)
+                        if(totalf>1):
+                            msg=get_string("File")+" "+str(l)+" "+get_string("of")+" "+str(totalf)+"\n"+get_string("Finding programmes")
+                        else:
+                            msg=get_string("Finding programmes")
+                        dialog.update(percent, message=msg)
 
     dialog.update(0, message=get_string("Creating database"))
     databasePath = os.path.join(profilePath, 'xmltv.db')
+    for ch in channels_to_insert:
+        logDebug(" ".join(ch))
     with lock:
         conn = sqlite3.connect(databasePath, detect_types=sqlite3.PARSE_DECLTYPES)
         conn.execute('PRAGMA foreign_keys = ON')
@@ -3323,7 +3378,7 @@ def xmltv():
         dialog.update(100, message=get_string("Finished loading data"))
         time.sleep(1)
         dialog.close()
-    log("[plugin.video.iptv.recorder] service_thread start")
+    logInfo("service_thread start")
     return
 
 

@@ -709,3 +709,11 @@ msgstr ""
 msgctxt "#30587"
 msgid "Use Cron for kodi addon"
 msgstr ""
+
+msgctxt "#30588"
+msgid "File"
+msgstr ""
+
+msgctxt "#30589"
+msgid "of"
+msgstr ""

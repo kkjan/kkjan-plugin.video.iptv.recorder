@@ -27,7 +27,7 @@ def escape(value):
 
 
 def get_format():
-    dateFormat = xbmc.getRegion('datelong')
+    dateFormat = xbmc.getRegion('datelong').replace('%-','%')
     timeFormat = xbmc.getRegion('time').replace('%H%H', '%H').replace('%I%I', '%I')
     timeFormat = timeFormat.replace(":%S", "")
     return "{}, {}".format(dateFormat, timeFormat)
@@ -41,18 +41,16 @@ def extract_date(dateLabel, timeLabel):
     for i in range(21,33):
         mounths_kodi.append(xbmc.getLocalizedString(i))
         
-    for i in range(1,12):
+    for i in range(1,13):
         mounth_loc_name= datetime(1900, i, 1).strftime('%B')
         mounths_locale.append(mounth_loc_name)
 
-    for i in range(0,11):
+    for i in range(0,12):
         date=date.replace(mounths_kodi[i],mounths_locale[i])
     log(date)
 
     timeString = xbmc.getInfoLabel(timeLabel)
-
     fullDate = "{}, {}".format(date, timeString)
-
 
     # https://bugs.python.org/issue27400
     try:

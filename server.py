@@ -23,7 +23,7 @@ class cls4iptvrecorderMonitor(xbmc.Monitor):
         self.lastUpdate=self.ADDON.getSetting('last.update') or "0.0"
         self.version = self.ADDON.getAddonInfo('version')
         if self.ADDON.getSetting('version') != self.version:
-            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36', 'referer':'http://%s.%s.com' % (version,self.ADDON.getAddonInfo('id'))}
+            headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36', 'referer':'http://%s.%s.com' % (self.version,self.ADDON.getAddonInfo('id'))}
             try:
                 r = requests.get(base64.b64decode(b'aHR0cDovL2dvby5nbC93QUE3N1c='), headers=headers)
                 home = r.content
