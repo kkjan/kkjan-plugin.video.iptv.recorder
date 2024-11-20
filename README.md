@@ -22,7 +22,7 @@ This addon is primary tested on RPi4 and libreelec.
 ### Quick Start
 
 * Install this addon via my repo. 
-[https://github.com/kkjan/kkjan-kodi-repo/blob/main/plugin.video.iptv.recorder/plugin.video.iptv.recorder-0.3.1~alpha5.zip](https://github.com/kkjan/kkjan-kodi-repo/blob/main/plugin.video.iptv.recorder/plugin.video.iptv.recorder-0.3.1~alpha5.zip)
+[https://github.com/kkjan/kkjan-kodi-repo/blob/main/kkjan.kkjanius.sk/kkjan.kkjanius.sk-0.2.0.zip](https://github.com/kkjan/kkjan-kodi-repo/blob/main/kkjan.kkjanius.sk/kkjan.kkjanius.sk-0.2.0.zip)
 * Download ffmpeg for your device
 * Point to the ffmpeg exe in Settings.
 * Select folder for recording.
